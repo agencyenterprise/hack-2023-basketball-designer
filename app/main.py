@@ -114,7 +114,6 @@ def main():
         generate_play_animation(locations, court_img)
 
     HtmlFile = open("assets/animation.html", "r")
-    #HtmlFile="myvideo.html"
     source_code = HtmlFile.read()
     components.html(source_code, height=court_img.shape[0], width=court_img.shape[1])
 
