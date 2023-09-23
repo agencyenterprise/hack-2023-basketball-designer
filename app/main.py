@@ -32,7 +32,7 @@ def main():
 
     default_text = "A play that involves a pick and roll between the point guard and the center, ending with an open shot for the shooting guard."
 
-    zone_text = ""
+    zone_type = ""
     if defense_type == 'Zone':
         zone_text = "Aggressive trapping 1-3-1"
         zone_type = st.text_input('Describe the type of zone', zone_text)
