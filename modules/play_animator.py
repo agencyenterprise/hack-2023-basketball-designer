@@ -1,10 +1,7 @@
-import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 import matplotlib.animation as animation
 import matplotlib.patches as patches
-import streamlit.components.v1 as components
-
 
 def get_court(court_img_path="assets/court.png"):
     # Load the court image

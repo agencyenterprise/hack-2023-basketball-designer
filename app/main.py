@@ -1,5 +1,6 @@
 import os
 import sys
+import numpy as np
 import streamlit as st
 import streamlit.components.v1 as components
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -7,7 +8,6 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from modules.play_generator import generate_play_descriptions, generate_play_by_play, generate_animation_data
 from modules.play_animator import get_court, generate_play_animation
 
-import numpy as np
 
 def interpolate_locations(location_array, x):
     interpolated_locations = []
