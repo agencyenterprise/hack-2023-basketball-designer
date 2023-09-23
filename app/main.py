@@ -77,8 +77,6 @@ def main():
     # Generate the play-by-play for the selected play description
     if st.button('Generate Play-by-Play'):
         st.session_state['play_by_play'] = generate_play_by_play(play_type, play_names[selected_play_index], play_descriptions[selected_play_index])
-        with open('assets/current_play_by_play.txt', 'w') as file:
-            file.write(st.session_state['play_by_play'])
     
     if 'play_by_play' in st.session_state:
         play_by_play = st.session_state['play_by_play']
@@ -110,8 +108,6 @@ def main():
 
         # Interpolate the locations
         locations = interpolate_locations(locations, 10)
-        # with open('assets/locations.npy', 'wb') as f:
-        #     np.save(f, np.array(locations))
         st.session_state["locations"] = locations
 
         # Generate the animation
