@@ -7,7 +7,11 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from modules.play_generator import generate_play_descriptions, generate_play_by_play, generate_animation_data
 from modules.play_animator import get_court, generate_play_animation
+import base64
 
+def get_image_base64(image_path):
+    with open(image_path, "rb") as img_file:
+        return base64.b64encode(img_file.read()).decode('utf-8')
 
 def interpolate_locations(location_array, x):
     interpolated_locations = []
@@ -25,6 +29,12 @@ def interpolate_locations(location_array, x):
 
 def main():
     st.image('assets/basketball_play_designer.jpg')
+    st.title('The Only AI Basketball Play Designer')
+    st.write('You can find a multitude of tools out there to diagram your basketball plays, but this is the first tool that will actually generate plays for you. \
+         Enter any requirements you have for your play, and our AI will generate plays that meets your requirements. \
+         You can be as detailed or as specific as you\'d like, for example:<br>\
+         "Give me a play that gets my shooting guard an open three-pointer. My shooting guard shoots the best from the right wing, and my point guard has a weak left hand. My center sets great screens, so have my center set an off-ball screen for my shooting guard."<br>\
+         "Generate a novel play out of the UCLA set."', unsafe_allow_html=True)
 
     # Add your selection boxes here
     play_type = st.selectbox('Select Play Type', ['Offense', 'Defense', 'Out-of-Bounds'])
@@ -116,6 +126,10 @@ def main():
     HtmlFile = open("assets/animation.html", "r")
     source_code = HtmlFile.read()
     components.html(source_code, height=court_img.shape[0], width=court_img.shape[1])
+
+    image_path = "assets/aestudio-logo-light.svg"
+    image_base64 = get_image_base64(image_path)
+    st.markdown(f'<p style="text-align: center;">Made with ❤️ by &nbsp;&nbsp;&nbsp;<a href="https://ae.studio"><img src="data:image/svg+xml;base64,{image_base64}" alt="AE Studio logo" height="30"></a></p>', unsafe_allow_html=True)
 
 if __name__ == "__main__":
     main()
