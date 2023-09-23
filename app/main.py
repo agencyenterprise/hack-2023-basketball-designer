@@ -1,9 +1,27 @@
 import os
 import sys
 import streamlit as st
+import streamlit.components.v1 as components
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from modules.play_generator import generate_play_descriptions, generate_play_by_play
+from modules.play_generator import generate_play_descriptions, generate_play_by_play, generate_animation_data
+from modules.play_animator import get_court, generate_play_animation
+
+import numpy as np
+
+def interpolate_locations(location_array, x):
+    interpolated_locations = []
+    for player_locations in location_array:
+        interpolated_player_locations = []
+        for i in range(len(player_locations) - 1):
+            start = np.array(player_locations[i])
+            end = np.array(player_locations[i + 1])
+            interpolated_points = [tuple(point) for point in np.linspace(start, end, x + 2)]
+            interpolated_player_locations.extend(interpolated_points[:-1])
+        interpolated_player_locations.append(player_locations[-1])
+        interpolated_locations.append(interpolated_player_locations)
+    return interpolated_locations
+
 
 def main():
     st.image('assets/basketball_play_designer.jpg')
@@ -58,8 +76,50 @@ def main():
 
     # Generate the play-by-play for the selected play description
     if st.button('Generate Play-by-Play'):
-        play_by_play = generate_play_by_play(play_type, play_names[selected_play_index], play_descriptions[selected_play_index])
-        st.write(play_by_play)
+        st.session_state['play_by_play'] = generate_play_by_play(play_type, play_names[selected_play_index], play_descriptions[selected_play_index])
+        with open('assets/current_play_by_play.txt', 'w') as file:
+            file.write(st.session_state['play_by_play'])
+    
+    if 'play_by_play' in st.session_state:
+        play_by_play = st.session_state['play_by_play']
+    else:
+        with open('assets/example_play_by_play.txt', 'r') as file:
+            play_by_play = file.read()
+
+    st.write(play_by_play)
+    
+    court_img = get_court(court_img_path="assets/court.png")
+
+
+    if 'locations' in st.session_state:
+        locations = st.session_state['locations']
+    else:
+        with open('assets/locations.npy', 'rb') as f:
+            locations = np.load(f)
+    
+    # Generate the animation data for the play-by-play
+    if st.button('Generate Animation'):
+        locations = generate_animation_data(play_by_play, court_img.shape[0], court_img.shape[1])
+        
+        # Add the basket location to the end of the ball's location array
+        if locations[-1][-1] != {(court_img.shape[1]*19/20, court_img.shape[0]/2)}:
+            for i in range(len(locations)):
+                locations[i].append(locations[i][-1])
+            locations[-1][-1] = (court_img.shape[1]*19/20, court_img.shape[0]/2)
+
+        # Interpolate the locations
+        locations = interpolate_locations(locations, 10)
+        # with open('assets/locations.npy', 'wb') as f:
+        #     np.save(f, np.array(locations))
+        st.session_state["locations"] = locations
+
+        # Generate the animation
+        generate_play_animation(locations, court_img)
+
+    HtmlFile = open("assets/animation.html", "r")
+    #HtmlFile="myvideo.html"
+    source_code = HtmlFile.read()
+    components.html(source_code, height=court_img.shape[0], width=court_img.shape[1])
 
 if __name__ == "__main__":
     main()
