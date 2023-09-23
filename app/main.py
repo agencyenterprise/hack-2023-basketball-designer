@@ -34,7 +34,7 @@ def main():
 
     zone_text = ""
     if defense_type == 'Zone':
-        zone_text = "Aggressive half-court trapping 1-3-1"
+        zone_text = "Aggressive trapping 1-3-1"
         zone_type = st.text_input('Describe the type of zone', zone_text)
 
     if play_type == 'Offense':
@@ -60,7 +60,7 @@ def main():
     play_names = ["Double Screen Decoy"]
     play_descriptions = ["The point guard (#1) starts with the ball and dribbles towards one side. The center (#5) sets a screen enabling #1 to drive to the basket while the power forward (#4) also sets a screen for the shooting guard (#2) leading him to an open spot on the perimeter for an easy shot on receiving a pass from #1."]
     if st.button('Generate Plays'):
-        st.session_state['play_names'], st.session_state['play_descriptions'] = generate_play_descriptions(play_type, defense_type, zone_text, additional_option, play_description, num_plays)
+        st.session_state['play_names'], st.session_state['play_descriptions'] = generate_play_descriptions(play_type, defense_type, zone_type, additional_option, play_description, num_plays)
     
     if 'play_names' in st.session_state:
         play_names = st.session_state['play_names']
@@ -101,11 +101,12 @@ def main():
     if st.button('Generate Animation'):
         locations = generate_animation_data(play_by_play, court_img.shape[0], court_img.shape[1])
         
-        # Add the basket location to the end of the ball's location array
-        if locations[-1][-1] != {(court_img.shape[1]*19/20, court_img.shape[0]/2)}:
-            for i in range(len(locations)):
-                locations[i].append(locations[i][-1])
-            locations[-1][-1] = (court_img.shape[1]*19/20, court_img.shape[0]/2)
+        if play_type != 'Defense':
+            # Add the basket location to the end of the ball's location array
+            if locations[-1][-1] != {(court_img.shape[1]*19/20, court_img.shape[0]/2)}:
+                for i in range(len(locations)):
+                    locations[i].append(locations[i][-1])
+                locations[-1][-1] = (court_img.shape[1]*19/20, court_img.shape[0]/2)
 
         # Interpolate the locations
         locations = interpolate_locations(locations, 10)
